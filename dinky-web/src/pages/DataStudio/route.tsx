@@ -22,6 +22,8 @@ import Console from '@/pages/DataStudio/BottomContainer/Console';
 import Lineage from '@/pages/DataStudio/BottomContainer/Lineage';
 import Result from '@/pages/DataStudio/BottomContainer/Result';
 import TableData from '@/pages/DataStudio/BottomContainer/TableData';
+import { isSql } from '@/pages/DataStudio/HeaderContainer/service';
+import { Catalog } from '@/pages/DataStudio/LeftContainer/Catalog';
 import MetaData from '@/pages/DataStudio/LeftContainer/MetaData';
 import Project from '@/pages/DataStudio/LeftContainer/Project';
 import { TabsPageSubType, TabsPageType } from '@/pages/DataStudio/model';
@@ -46,6 +48,7 @@ import {
   MonitorOutlined,
   PlayCircleOutlined,
   PlusCircleOutlined,
+  PlusOutlined,
   ReloadOutlined,
   RightSquareOutlined,
   SettingOutlined,
@@ -65,11 +68,11 @@ export const LeftSide = [
     children: <Project />
   },
   {
-    auth: '/datastudio/left/structure',
-    key: 'menu.datastudio.structure',
+    auth: '/datastudio/left/catalog',
+    key: 'menu.datastudio.catalog',
     icon: <TableOutlined />,
-    label: l('menu.datastudio.structure'),
-    children: <div>structure</div>
+    label: l('menu.datastudio.catalog'),
+    children: <Catalog />
   },
   {
     auth: '/datastudio/left/metadata',
@@ -95,7 +98,9 @@ export const RightSide: TabProp[] = [
     icon: <PlayCircleOutlined />,
     label: l('menu.datastudio.executeConfig'),
     children: <ExecuteConfig />,
-    isShow: (type, subType) => type === TabsPageType.project && TabsPageSubType.flinkSql === subType
+    isShow: (type, subType) =>
+      (type === TabsPageType.project && TabsPageSubType.flinkSql === subType) ||
+      isSql(subType ?? '')
   },
   {
     auth: '/datastudio/right/savePoint',
@@ -246,6 +251,18 @@ export const LeftBottomMoreTabs: { [c: string]: TabProp[] } = {
 // btn route
 export const BtnRoute: { [c: string]: CircleDataStudioButtonProps[] } = {
   'menu.datastudio.metadata': [
+    {
+      icon: <PlusOutlined />,
+      title: l('button.create'),
+      onClick: () => {}
+    },
+    {
+      icon: <ReloadOutlined />,
+      title: l('button.refresh'),
+      onClick: () => {}
+    }
+  ],
+  'menu.datastudio.catalog': [
     {
       icon: <ReloadOutlined />,
       title: l('button.refresh'),

@@ -26,15 +26,8 @@ import { l } from '@/utils/intl';
 export const LIFECYCLE_FILTER = () => {
   return [
     { text: l('global.table.lifecycle.dev'), value: JOB_LIFE_CYCLE.DEVELOP },
-    {
-      text: l('global.table.lifecycle.publish'),
-      value: JOB_LIFE_CYCLE.RELEASE
-    },
     { text: l('global.table.lifecycle.online'), value: JOB_LIFE_CYCLE.ONLINE },
-    {
-      text: l('global.table.lifecycle.unknown'),
-      value: JOB_LIFE_CYCLE.UNKNOWN
-    }
+    { text: l('global.table.lifecycle.unknown'), value: JOB_LIFE_CYCLE.UNKNOWN }
   ];
 };
 

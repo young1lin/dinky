@@ -29,6 +29,7 @@ import org.dinky.data.model.JobTypeOverView;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 import org.dinky.data.result.SqlExplainResult;
+import org.dinky.gateway.enums.SavePointType;
 import org.dinky.gateway.result.SavePointResult;
 import org.dinky.job.JobResult;
 import org.dinky.mybatis.service.ISuperService;
@@ -66,7 +67,7 @@ public interface TaskService extends ISuperService<Task> {
      * @return A {@link JobResult} object representing the result of the submitted task.
      * @throws ExcuteException If there is an error executing the task.
      */
-    JobResult submitTask(Integer id, String savePointPath) throws ExcuteException;
+    JobResult submitTask(Integer id, String savePointPath) throws Exception;
 
     /**
      * Restart the given task and return the job result.
@@ -76,7 +77,7 @@ public interface TaskService extends ISuperService<Task> {
      * @return A {@link JobResult} object representing the result of the restarted task.
      * @throws ExcuteException If there is an error restarting the task.
      */
-    JobResult restartTask(Integer id, String savePointPath) throws ExcuteException;
+    JobResult restartTask(Integer id, String savePointPath) throws Exception;
 
     /**
      * Savepoint the given task job and return the savepoint result.
@@ -85,7 +86,7 @@ public interface TaskService extends ISuperService<Task> {
      * @param savePointType The type of savepoint to create.
      * @return A {@link SavePointResult} object representing the savepoint result.
      */
-    SavePointResult savepointTaskJob(TaskDTO task, String savePointType);
+    SavePointResult savepointTaskJob(TaskDTO task, SavePointType savePointType);
 
     /**
      * Explain the given task and return a list of SQL explain results.

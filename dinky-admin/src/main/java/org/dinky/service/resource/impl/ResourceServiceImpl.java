@@ -20,6 +20,7 @@
 package org.dinky.service.resource.impl;
 
 import org.dinky.data.dto.TreeNodeDTO;
+import org.dinky.data.enums.Status;
 import org.dinky.data.exception.BusException;
 import org.dinky.data.model.Resources;
 import org.dinky.data.result.Result;
@@ -29,7 +30,6 @@ import org.dinky.service.resource.ResourcesService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -156,7 +156,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourcesMapper, Resources>
     @Override
     public String getContentByResourceId(Integer id) {
         Resources resources = getById(id);
-        Assert.notNull(resources, () -> new BusException("resource is not exists!"));
+        Assert.notNull(resources, () -> new BusException(Status.RESOURCE_DIR_OR_FILE_NOT_EXIST));
         Assert.isFalse(resources.getSize() > ALLOW_MAX_CAT_CONTENT_SIZE, () -> new BusException("file is too large!"));
         return getBaseResourceManager().getFileContent(resources.getFullName());
     }
@@ -203,27 +203,37 @@ public class ResourceServiceImpl extends ServiceImpl<ResourcesMapper, Resources>
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void remove(Integer id) {
-        if (id < 1) {
-            getBaseResourceManager().remove("/");
-            // todo 删除主目录，实际是清空
-            remove(new LambdaQueryWrapper<Resources>().ne(Resources::getId, 0));
-            return;
+    public boolean remove(Integer id) {
+        Assert.isFalse(
+                Opt.ofNullable(getById(id))
+                                .orElseThrow(() -> new BusException(Status.RESOURCE_DIR_OR_FILE_NOT_EXIST))
+                                .getPid()
+                        == -1,
+                () -> new BusException(Status.ROOT_DIR_NOT_ALLOW_DELETE));
+        try {
+            if (id < 1) {
+                getBaseResourceManager().remove("/");
+                // todo 删除主目录，实际是清空
+                remove(new LambdaQueryWrapper<Resources>().ne(Resources::getId, 0));
+            }
+            Resources byId = getById(id);
+            if (isExistsChildren(id)) {
+                getBaseResourceManager().remove(byId.getFullName());
+                if (byId.getIsDirectory()) {
+                    List<Resources> resourceByPidToChildren =
+                            getResourceByPidToChildren(new ArrayList<>(), byId.getId());
+                    removeBatchByIds(resourceByPidToChildren);
+                }
+                List<Resources> resourceByPidToParent = getResourceByPidToParent(new ArrayList<>(), byId.getPid());
+                resourceByPidToParent.forEach(x -> x.setSize(x.getSize() - byId.getSize()));
+                updateBatchById(resourceByPidToParent);
+                getBaseResourceManager().remove(byId.getFullName());
+                return removeById(id);
+            }
+            return removeById(id);
+        } catch (Exception e) {
+            throw new BusException(Status.DELETE_FAILED);
         }
-        Resources byId = getById(id);
-        if (!isExistsChildren(id)) {
-            removeById(id);
-            return;
-        }
-        getBaseResourceManager().remove(byId.getFullName());
-        if (byId.getIsDirectory()) {
-            List<Resources> resourceByPidToChildren = getResourceByPidToChildren(new ArrayList<>(), byId.getId());
-            removeBatchByIds(resourceByPidToChildren);
-        }
-        List<Resources> resourceByPidToParent = getResourceByPidToParent(new ArrayList<>(), byId.getPid());
-        resourceByPidToParent.forEach(x -> x.setSize(x.getSize() - byId.getSize()));
-        updateBatchById(resourceByPidToParent);
-        removeById(id);
     }
 
     private boolean isExistsChildren(Integer id) {
@@ -295,8 +305,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourcesMapper, Resources>
 
         List<Resources> returnList = new ArrayList<>();
 
-        for (Iterator<Resources> iterator = resourcesList.iterator(); iterator.hasNext(); ) {
-            Resources resources = iterator.next();
+        for (Resources resources : resourcesList) {
             //  get all child catalogue of parent catalogue id , the -1 is root catalogue
             if (resources.getPid() == -1) {
                 recursionBuildResourcesAndChildren(resourcesList, resources);

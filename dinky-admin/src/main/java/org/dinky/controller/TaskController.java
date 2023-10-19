@@ -30,9 +30,12 @@ import org.dinky.data.model.Task;
 import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
 import org.dinky.data.result.SqlExplainResult;
+import org.dinky.gateway.enums.SavePointType;
 import org.dinky.gateway.result.SavePointResult;
 import org.dinky.job.JobResult;
-import org.dinky.process.exception.ExcuteException;
+import org.dinky.process.annotations.ExecuteProcess;
+import org.dinky.process.annotations.ProcessId;
+import org.dinky.process.enums.ProcessType;
 import org.dinky.service.TaskService;
 import org.dinky.utils.JsonUtils;
 
@@ -70,7 +73,8 @@ public class TaskController {
     @GetMapping("/submitTask")
     @ApiOperation("Submit Task")
     @Log(title = "Submit Task", businessType = BusinessType.SUBMIT)
-    public Result<JobResult> submitTask(@RequestParam Integer id) throws ExcuteException {
+    @ExecuteProcess(type = ProcessType.FLINK_SUBMIT)
+    public Result<JobResult> submitTask(@ProcessId @RequestParam Integer id) throws Exception {
         JobResult jobResult = taskService.submitTask(id, null);
         if (jobResult.isSuccess()) {
             return Result.succeed(jobResult, Status.EXECUTE_SUCCESS);
@@ -86,12 +90,13 @@ public class TaskController {
         return Result.succeed(taskService.cancelTaskJob(taskService.getTaskInfoById(id)), Status.EXECUTE_SUCCESS);
     }
 
-    /** 重启任务 */
+    /**
+     * 重启任务
+     */
     @GetMapping(value = "/restartTask")
     @ApiOperation("Restart Task")
     @Log(title = "Restart Task", businessType = BusinessType.REMOTE_OPERATION)
-    public Result<JobResult> restartTask(@RequestParam Integer id, @RequestParam String savePointPath)
-            throws ExcuteException {
+    public Result<JobResult> restartTask(@RequestParam Integer id, String savePointPath) throws Exception {
         return Result.succeed(taskService.restartTask(id, savePointPath));
     }
 
@@ -100,7 +105,8 @@ public class TaskController {
     @ApiOperation("Savepoint Trigger")
     public Result<SavePointResult> savepoint(@RequestParam Integer taskId, @RequestParam String savePointType) {
         return Result.succeed(
-                taskService.savepointTaskJob(taskService.getTaskInfoById(taskId), savePointType),
+                taskService.savepointTaskJob(
+                        taskService.getTaskInfoById(taskId), SavePointType.valueOf(savePointType.toUpperCase())),
                 Status.EXECUTE_SUCCESS);
     }
 
@@ -109,13 +115,6 @@ public class TaskController {
     @ApiOperation("onLineTask")
     public Result<Boolean> onLineTask(@RequestParam Integer taskId) {
         return Result.succeed(taskService.changeTaskLifeRecyle(taskId, JobLifeCycle.ONLINE));
-    }
-
-    @GetMapping("/offLineTask")
-    @Log(title = "offLineTask", businessType = BusinessType.TRIGGER)
-    @ApiOperation("offLineTask")
-    public Result<Boolean> offLineTask(@RequestParam Integer taskId) {
-        return Result.succeed(taskService.changeTaskLifeRecyle(taskId, JobLifeCycle.DEVELOP));
     }
 
     @PostMapping("/explainSql")

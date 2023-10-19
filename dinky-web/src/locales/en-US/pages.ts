@@ -309,6 +309,11 @@ export default {
   'pages.datastudio.editor.stop.job': 'Stop job',
   'pages.datastudio.editor.stop.jobConfirm': 'Are you sure to stop the job [{jobName}]? ',
   'pages.datastudio.editor.submitting': 'The new task [{jobName}] is executing',
+  'pages.datastudio.editor.onlyread':
+    'Task has been published, modification is prohibited, please go offline first',
+  'pages.datastudio.editor.notsave': 'Current changes are not saved! ',
+  'pages.datastudio.editor.notsave.note':
+    'Continue will discard the changes, are you sure to continue?',
   'pages.datastudio.to.jobDetail': 'Operation Center',
   'pages.datastudio.explain.validate': 'Validating...',
   'pages.datastudio.explain.validate.allright': 'All Right',
@@ -323,6 +328,21 @@ export default {
   'pages.datastudio.footer.codeType': 'Code Type',
   'pages.datastudio.footer.lineSeparator': 'Line Separator',
   'pages.datastudio.footer.memDetails': 'Maximum heap size',
+
+  'pages.datastudio.sql.sqlChanged': 'Code recovery',
+  'pages.datastudio.sql.sqlChangedPrompt':
+    'The code you modified is not saved, it is inconsistent with the server, we cached the last modification for you, please select the version',
+  'pages.datastudio.sql.sqldiff.title': 'Code comparison',
+  'pages.datastudio.sql.paramdiff.title': 'Configuration comparison',
+  'pages.datastudio.sql.nochange': 'No change in job content',
+  'pages.datastudio.sql.useCache': 'Use cached version',
+  'pages.datastudio.sql.useServer': 'Use server version',
+  'pages.datastudio.sql.cacheVersion': 'Local cache code',
+  'pages.datastudio.sql.serverVersion': 'server-side code',
+  'pages.datastudio.sql.configItem': 'Configuration Item',
+  'pages.datastudio.sql.cacheConfigItem': 'Local cache configuration',
+  'pages.datastudio.sql.serverConfigItem': 'server-side configuration',
+
   'pages.datastudio.help.sqlChanged': 'Sql context or configure changed',
   'pages.datastudio.help.sqlChangedPrompt':
     'the remote context is not the same as the current page , will the data be flushed?',
@@ -333,6 +353,8 @@ export default {
   'pages.datastudio.label.execConfig.changelog': 'Print ChangeLog',
   'pages.datastudio.label.execConfig.changelog.tip':
     'Open the print stream, it will run synchronously and return the ChangeLog containing op information, it is not enabled by default and returns the final result Table',
+  'pages.datastudio.label.execConfig.selectDatabase': 'Select Database',
+  'pages.datastudio.label.execConfig.selectDatabase.tip': 'Select the database to be used',
   'pages.datastudio.label.execConfig.maxrow': 'Maximum number of rows',
   'pages.datastudio.label.execConfig.maxrow.tip': 'The maximum number of rows of preview data',
   'pages.datastudio.label.execConfig.preview.result': 'Preview Result',
@@ -626,6 +648,7 @@ export default {
   'rc.ci.alias': 'Alias',
   'rc.ci.aliasPlaceholder': 'Please enter an alias!',
   'rc.ci.ar': 'Auto Registration',
+  'rc.ci.mr': 'Manual Registration',
   'rc.ci.create': 'Create Cluster Instance',
   'rc.ci.deleteConfirm': 'Are you sure to delete this Flink Cluster instance? ',
   'rc.ci.heartbeat': 'Heartbeat Detection',
@@ -647,6 +670,8 @@ export default {
   'rc.ci.type': 'Type',
   'rc.ci.typePlaceholder': 'Please select a cluster type!',
   'rc.ci.version': 'Version',
+  'rc.ci.desc': 'Note',
+  'rc.ci.search': 'Search Name/Alias/Note',
   'rc.doc.category': 'Document Type',
   'rc.doc.categoryPlaceholder': 'Please select the type of this Document!',
   'rc.doc.create': 'Create Document',
@@ -784,9 +809,17 @@ export default {
   'rc.gv.value': 'Value',
   'rc.gv.valuePlaceholder': 'Please enter the Global Variable value',
   'rc.resource.click': 'Click left file to view details',
-  'rc.resource.noResource':
-    '\t\tNo resources\nPlease Click the button above to upload folders/files',
+  'rc.resource.click.tip1':
+    'please make sure the resource configuration is correct, otherwise it will cause resource upload failure!',
+  'rc.resource.click.tip2':
+    'If the resource configuration of your configuration center does not configure the resource upload path or use the default resource upload path (/dinky)',
+  'rc.resource.click.tip3': 'You can click the link on the right to configure ->',
   'rc.resource.upload': 'Upload Files/Folders',
+  'rc.resource.upload.success': 'File [{fileName}] Upload successfully',
+  'rc.resource.upload.fail': 'File [{fileName}] Upload failed',
+  'rc.resource.upload.tip1': 'Click or drag file to this area to upload',
+  'rc.resource.upload.tip2':
+    'Support for a single or bulk upload. Strictly prohibited from uploading company data or\n          other banned files.',
   'rc.template.codeType': 'Code Type',
   'rc.template.codeTypePlaceholder': 'Please select code type! ',
   'rc.template.create': 'Create UDF Template',
@@ -811,7 +844,7 @@ export default {
   'role.EnterRoleCode': 'Please enter Role Code!',
   'role.EnterRoleName': 'Please enter Role Name!',
   'role.assign': 'Assign Permissions',
-  'role.assignMenu': 'Role',
+  'role.assignMenu': 'Role: {roleName}, Assign Menu',
   'role.belongTenant': 'Belong Tenant',
   'role.create': 'Create Role',
   'role.delete': 'Delete Role',

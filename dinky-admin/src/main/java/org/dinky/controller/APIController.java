@@ -27,9 +27,9 @@ import org.dinky.data.exception.NotSupportExplainExcepition;
 import org.dinky.data.model.JobInstance;
 import org.dinky.data.result.Result;
 import org.dinky.data.result.SqlExplainResult;
+import org.dinky.gateway.enums.SavePointType;
 import org.dinky.gateway.result.SavePointResult;
 import org.dinky.job.JobResult;
-import org.dinky.process.exception.ExcuteException;
 import org.dinky.service.JobInstanceService;
 import org.dinky.service.TaskService;
 
@@ -67,7 +67,7 @@ public class APIController {
     @PostMapping("/submitTask")
     @ApiOperation("Submit Task")
     //    @Log(title = "Submit Task", businessType = BusinessType.SUBMIT)
-    public Result<JobResult> submitTask(@RequestBody TaskDTO taskDTO) throws ExcuteException {
+    public Result<JobResult> submitTask(@RequestBody TaskDTO taskDTO) throws Exception {
         JobResult jobResult = taskService.submitTask(taskDTO.getId(), null);
         if (jobResult.isSuccess()) {
             return Result.succeed(jobResult, Status.EXECUTE_SUCCESS);
@@ -89,8 +89,7 @@ public class APIController {
     @GetMapping(value = "/restartTask")
     @ApiOperation("Restart Task")
     //    @Log(title = "Restart Task", businessType = BusinessType.REMOTE_OPERATION)
-    public Result<JobResult> restartTask(@RequestParam Integer id, @RequestParam String savePointPath)
-            throws ExcuteException {
+    public Result<JobResult> restartTask(@RequestParam Integer id, String savePointPath) throws Exception {
         return Result.succeed(taskService.restartTask(id, savePointPath));
     }
 
@@ -99,7 +98,8 @@ public class APIController {
     @ApiOperation("Savepoint Trigger")
     public Result<SavePointResult> savepoint(@RequestParam Integer taskId, @RequestParam String savePointType) {
         return Result.succeed(
-                taskService.savepointTaskJob(taskService.getTaskInfoById(taskId), savePointType),
+                taskService.savepointTaskJob(
+                        taskService.getTaskInfoById(taskId), SavePointType.valueOf(savePointType.toUpperCase())),
                 Status.EXECUTE_SUCCESS);
     }
 
